@@ -255,10 +255,13 @@ def main() -> int:
 
     input_dir = settings["input_dir"]
     plots_dir = settings["plots_dir"]
+    images_dir = plots_dir / "images"
+    tables_dir = plots_dir / "tables"
 
     if not input_dir.exists():
         raise RuntimeError(f"Input directory does not exist: {input_dir}")
-    plots_dir.mkdir(parents=True, exist_ok=True)
+    images_dir.mkdir(parents=True, exist_ok=True)
+    tables_dir.mkdir(parents=True, exist_ok=True)
 
     metadata = load_metadata(input_dir)
     n_rows = len(metadata)
@@ -288,8 +291,39 @@ def main() -> int:
             scene_names=scene_names,
             tsn_embedding=tsn_embedding,
             umap_embedding=umap_embedding,
-            output_path=plots_dir / f"{modality}_projection.csv",
+            output_path=tables_dir / f"{modality}_projection.csv",
         )
+
+        save_scatter(
+            embedding=umap_embedding,
+            labels=location_labels,
+            modality=modality,
+            projection_title="UMAP",
+            params_title=(
+                f"nn={settings['umap_n_neighbors']}, "
+                f"min_dist={settings['umap_min_dist']:.2f}"
+            ),
+            x_label="UMAP-1",
+            y_label="UMAP-2",
+            output_path=images_dir / f"{modality}_umap.png",
+        )
+        total_plots += 1
+
+        safe_perplexity = max(1.0, min(settings["tsn_perplexity"], float(n_rows - 1)))
+        save_scatter(
+            embedding=tsn_embedding,
+            labels=location_labels,
+            modality=modality,
+            projection_title="TSN",
+            params_title=(
+                f"perplexity={safe_perplexity:.2f}, "
+                f"lr={settings['tsn_learning_rate']:.1f}"
+            ),
+            x_label="TSN-1",
+            y_label="TSN-2",
+            output_path=images_dir / f"{modality}_tsn.png",
+        )
+        total_plots += 1
 
         if settings["projection"] == "umap":
             embedding = umap_embedding
@@ -304,7 +338,6 @@ def main() -> int:
         elif settings["projection"] == "tsn":
             embedding = tsn_embedding
             projection_title = "TSN"
-            safe_perplexity = max(1.0, min(settings["tsn_perplexity"], float(n_rows - 1)))
             params_title = (
                 f"perplexity={safe_perplexity:.2f}, "
                 f"lr={settings['tsn_learning_rate']:.1f}"
@@ -325,27 +358,29 @@ def main() -> int:
         score = separation_signal(embedding, location_labels)
         best_signal = max(best_signal, score)
 
-        save_scatter(
-            embedding=embedding,
-            labels=location_labels,
-            modality=modality,
-            projection_title=projection_title,
-            params_title=params_title,
-            x_label=x_label,
-            y_label=y_label,
-            output_path=plots_dir / out_name,
-        )
-        total_plots += 1
+        if settings["projection"] == "pca":
+            save_scatter(
+                embedding=embedding,
+                labels=location_labels,
+                modality=modality,
+                projection_title=projection_title,
+                params_title=params_title,
+                x_label=x_label,
+                y_label=y_label,
+                output_path=images_dir / out_name,
+            )
+            total_plots += 1
 
     print(f"Rows: {n_rows}")
     print(f"Modalities: {settings['modalities']}")
     print(f"Projection: {settings['projection']}")
     print(f"Plots written: {total_plots}")
-    print(f"Output dir: {plots_dir.resolve()}")
+    print(f"Images dir: {images_dir.resolve()}")
+    print(f"Tables dir: {tables_dir.resolve()}")
     print(f"Best location-separation signal: {best_signal:.4f}")
 
     if (not settings["disable_review_gate"]) and best_signal < 0.25:
-        marker = plots_dir / "REVIEW_REQUIRED.txt"
+        marker = tables_dir / "REVIEW_REQUIRED.txt"
         marker.write_text(
             "Configured projection showed weak Boston/Singapore separation.\n"
             "Review feature construction before continuing downstream tasks.\n",

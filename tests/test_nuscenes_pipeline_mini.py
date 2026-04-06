@@ -232,9 +232,13 @@ def test_project_script_generates_plots_without_overwriting_raw(
     assert before_hash == after_hash
 
     plots_dir = out_dir / "plots"
-    pngs = sorted(plots_dir.glob("agent_umap.png"))
-    assert len(pngs) == 1
-    projection_csv = plots_dir / "agent_projection.csv"
+    images_dir = plots_dir / "images"
+    tables_dir = plots_dir / "tables"
+    umap_pngs = sorted(images_dir.glob("agent_umap.png"))
+    tsn_pngs = sorted(images_dir.glob("agent_tsn.png"))
+    assert len(umap_pngs) == 1
+    assert len(tsn_pngs) == 1
+    projection_csv = tables_dir / "agent_projection.csv"
     assert projection_csv.exists()
     projection_df = pd.read_csv(projection_csv)
     assert projection_df.columns.tolist() == [

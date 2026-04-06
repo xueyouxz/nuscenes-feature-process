@@ -1,0 +1,17 @@
+{
+  "default_version": "v1.0-mini",
+  "keyframes": 34,
+  "version_to_dataroot": {
+    "v1.0-trainval": "~/Data/nuscenes",
+    "v1.0-mini": "~/Data/nuscenes-mini"
+  },
+  "split_to_expected_scenes": {
+    "val": 150,
+    "mini_val": 2,
+    "mini_train": 8
+  },
+  "default_split_by_version": {
+    "v1.0-trainval": "val",
+    "v1.0-mini": "mini_train"
+  }
+}

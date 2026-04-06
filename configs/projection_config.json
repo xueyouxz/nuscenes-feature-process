@@ -1,0 +1,9 @@
+{
+  "input_dir": "outputs",
+  "plots_dir": null,
+  "modalities": ["agent", "map", "ego"],
+  "random_state": 42,
+  "disable_review_gate": false,
+  "disable_numba_jit": false,
+  "fallback_on_umap_error": false
+}

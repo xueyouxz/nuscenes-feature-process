@@ -4,6 +4,7 @@ import itertools
 import json
 import os
 import sys
+import warnings
 from pathlib import Path
 
 import matplotlib
@@ -109,13 +110,25 @@ def run_umap(
     try:
         import umap
 
-        reducer = umap.UMAP(
-            n_components=2,
-            n_neighbors=n_neighbors,
-            min_dist=min_dist,
-            random_state=random_state,
-        )
-        return reducer.fit_transform(features_scaled)
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message=r".*n_jobs value .* overridden .* setting random_state.*",
+                category=UserWarning,
+            )
+            warnings.filterwarnings(
+                "ignore",
+                message=r".*n_neighbors is larger than the dataset size.*",
+                category=UserWarning,
+            )
+
+            reducer = umap.UMAP(
+                n_components=2,
+                n_neighbors=n_neighbors,
+                min_dist=min_dist,
+                random_state=random_state,
+            )
+            return reducer.fit_transform(features_scaled)
     except ImportError as exc:
         if not fallback_on_error:
             raise RuntimeError(

@@ -58,6 +58,7 @@ def write_project_config(
     path: Path,
     input_dir: Path,
     modalities: list[str],
+    projection: str = "umap",
     disable_review_gate: bool = False,
     disable_numba_jit: bool = False,
     fallback_on_umap_error: bool = False,
@@ -68,10 +69,15 @@ def write_project_config(
                 "input_dir": str(input_dir),
                 "plots_dir": None,
                 "modalities": modalities,
+                "projection": projection,
                 "random_state": 42,
                 "disable_review_gate": disable_review_gate,
                 "disable_numba_jit": disable_numba_jit,
                 "fallback_on_umap_error": fallback_on_umap_error,
+                "umap_n_neighbors": 10,
+                "umap_min_dist": 0.1,
+                "tsn_perplexity": 10.0,
+                "tsn_learning_rate": 200.0,
             }
         ),
         encoding="utf-8",
@@ -226,8 +232,19 @@ def test_project_script_generates_plots_without_overwriting_raw(
     assert before_hash == after_hash
 
     plots_dir = out_dir / "plots"
-    pngs = sorted(plots_dir.glob("agent_nn*_md*.png"))
-    assert len(pngs) == 12
+    pngs = sorted(plots_dir.glob("agent_umap.png"))
+    assert len(pngs) == 1
+    projection_csv = plots_dir / "agent_projection.csv"
+    assert projection_csv.exists()
+    projection_df = pd.read_csv(projection_csv)
+    assert projection_df.columns.tolist() == [
+        "scene-name",
+        "tsne-comp1",
+        "tsne-comp2",
+        "umap-comp1",
+        "umap-comp2",
+    ]
+    assert len(projection_df) == 2
 
 
 def test_extract_features_uses_config_version_mapping_and_split_list(

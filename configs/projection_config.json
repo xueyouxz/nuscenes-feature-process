@@ -2,8 +2,13 @@
   "input_dir": "outputs",
   "plots_dir": null,
   "modalities": ["agent", "map", "ego"],
+  "projection": "umap",
   "random_state": 42,
   "disable_review_gate": false,
   "disable_numba_jit": false,
-  "fallback_on_umap_error": false
+  "fallback_on_umap_error": false,
+  "umap_n_neighbors": 20,
+  "umap_min_dist": 0.1,
+  "tsn_perplexity": 10.0,
+  "tsn_learning_rate": 200.0
 }

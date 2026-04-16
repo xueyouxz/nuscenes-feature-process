@@ -1,0 +1,13 @@
+{
+  "gt_dir": "/Users/xyxz/Projects/JavaScript/plannning-eval-vis/public/data/gt_scene_mini",
+  "output_dir": "outputs/ego_som",
+  "dt": 0.5,
+  "n_kinematic_frames": 34,
+  "random_state": 42,
+  "som_grid_rows": 6,
+  "som_grid_cols": 6,
+  "som_sigma": 3.0,
+  "som_learning_rate": 0.5,
+  "som_num_iterations": 150000,
+  "pca_n_components": 20
+}

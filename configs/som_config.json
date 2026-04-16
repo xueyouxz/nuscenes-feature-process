@@ -1,0 +1,12 @@
+{
+  "gt_dir": "/Users/xyxz/Projects/JavaScript/plannning-eval-vis/public/data/gt_scene_mini",
+  "pred_dir": "/Users/xyxz/Projects/JavaScript/plannning-eval-vis/public/data/sparsedrive_pred_mini",
+  "output_dir": "outputs/som",
+  "random_state": 42,
+  "som_grid_rows": 8,
+  "som_grid_cols": 8,
+  "som_sigma": 4.0,
+  "som_learning_rate": 0.5,
+  "som_num_iterations": 150000,
+  "pca_n_components": 20
+}
